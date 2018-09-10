@@ -91,9 +91,53 @@
   !*** ./src/app.js ***!
   \********************/
 /*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const FormView = __webpack_require__(/*! ./views/form_view.js */ \"./src/views/form_view.js\");\nconst ResultView = __webpack_require__(/*! ./views/result_view.js */ \"./src/views/result_view.js\");\nconst Primer = __webpack_require__(/*! ./models/primer.js */ \"./src/models/primer.js\");\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  console.log('JavaScript Loaded');\n\n  const formView = new FormView();\n  formView.bindEvents();\n\n  const primer = new Primer();\n  primer.bindEvents();\n\n  const resultView = new ResultView();\n  resultView.bindEvents();\n\n});\n\n\n//# sourceURL=webpack:///./src/app.js?");
+
+/***/ }),
+
+/***/ "./src/helpers/pub_sub.js":
+/*!********************************!*\
+  !*** ./src/helpers/pub_sub.js ***!
+  \********************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("document.addEventListener('DOMContentLoaded', () => {\n  console.log('JavaScript Loaded');\n});\n\n\n//# sourceURL=webpack:///./src/app.js?");
+eval("const PubSub = {\n  publish: function (channel, payload) {\n    const event = new CustomEvent(channel, {\n      detail: payload\n    });\n    document.dispatchEvent(event);\n  },\n\n  subscribe: function (channel, callback) {\n    document.addEventListener(channel, callback);\n  }\n};\n\nmodule.exports = PubSub;\n\n\n//# sourceURL=webpack:///./src/helpers/pub_sub.js?");
+
+/***/ }),
+
+/***/ "./src/models/primer.js":
+/*!******************************!*\
+  !*** ./src/models/primer.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./src/helpers/pub_sub.js\");\n\nconst Primer = function () {\n\n};\n\nPrimer.prototype.is_prime = function (number_in) {\n  for(var i = 2; i < number_in; i++) {\n      if(number_in % i === 0) {\n          return `${number_in} is not a Prime!`;\n      }\n  }\n  return `${number_in} is a Prime!`;\n};\n\nPrimer.prototype.bindEvents = function () {\n  PubSub.subscribe('FormView:number-input', (event) => {\n    const input_number = event.detail;\n    const result = this.is_prime(input_number);\n    PubSub.publish('Primer:result-out', result);\n  });\n};\n\nmodule.exports = Primer;\n\n\n//# sourceURL=webpack:///./src/models/primer.js?");
+
+/***/ }),
+
+/***/ "./src/views/form_view.js":
+/*!********************************!*\
+  !*** ./src/views/form_view.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./src/helpers/pub_sub.js\");\n\nconst FormView = function () {\n\n};\n\nFormView.prototype.bindEvents = function () {\n  const form = document.querySelector('#prime-checker-form');\n  form.addEventListener('submit', (event) => {\n    event.preventDefault();\n      const number_form_input = event.target.number.value;\n      PubSub.publish('FormView:number-input', number_form_input);\n  });\n};\n\nmodule.exports = FormView;\n\n\n//# sourceURL=webpack:///./src/views/form_view.js?");
+
+/***/ }),
+
+/***/ "./src/views/result_view.js":
+/*!**********************************!*\
+  !*** ./src/views/result_view.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub.js */ \"./src/helpers/pub_sub.js\");\n\nconst ResultView = function () {\n\n};\n\nResultView.prototype.bindEvents = function () {\n  PubSub.subscribe('Primer:result-out', (event) => {\n    const prime_result = event.detail;\n    this.displayResult(prime_result);\n  });\n};\n\nResultView.prototype.displayResult = function (result) {\n  const resultElement = document.querySelector('#result');\n  resultElement .textContent = `${result}`;\n};\n\n\nmodule.exports = ResultView;\n\n\n//# sourceURL=webpack:///./src/views/result_view.js?");
 
 /***/ })
 
